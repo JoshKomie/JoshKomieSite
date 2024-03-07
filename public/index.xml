@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Josh Komies Blog</title>
+    <link>http://www.joshkomie.com/</link>
+    <description>Recent content on Josh Komies Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Jan 2024 18:05:19 -0600</lastBuildDate><atom:link href="http://www.joshkomie.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pathfinding in Rust - Part 2 - BFS</title>
+      <link>http://www.joshkomie.com/posts/pathfinding-algorithm/</link>
+      <pubDate>Thu, 18 Jan 2024 18:05:19 -0600</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/pathfinding-algorithm/</guid>
+      <description>In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&amp;rsquo;ll need a start and end point to track where we&amp;rsquo;re pathfinding to and from. Later on, I&amp;rsquo;d like to set this via mouse input, but for now, let&amp;rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile.</description>
+    </item>
+    
+    <item>
+      <title>Pathfinding in Rust - Part 4 - BFS cont</title>
+      <link>http://www.joshkomie.com/posts/pathfinding-bfs2/</link>
+      <pubDate>Thu, 18 Jan 2024 18:05:19 -0600</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/pathfinding-bfs2/</guid>
+      <description>In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&amp;rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&amp;lt;Position, Option&amp;gt;. We&amp;rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination.</description>
+    </item>
+    
+    <item>
+      <title>Pathfinding in Rust - Part 1 - Setup</title>
+      <link>http://www.joshkomie.com/posts/pathfinding-setup/</link>
+      <pubDate>Sat, 13 Jan 2024 18:05:19 -0600</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/pathfinding-setup/</guid>
+      <description>In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&amp;rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&amp;#34;pathfinder&amp;#34;)] async fn main() { println!</description>
+    </item>
+    
+    <item>
+      <title>Kickoff</title>
+      <link>http://www.joshkomie.com/posts/kickoff/</link>
+      <pubDate>Thu, 11 Jan 2024 15:27:57 -0600</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/kickoff/</guid>
+      <description>Welcome! I&amp;rsquo;d like to explore various game dev techniques and concepts, and document that process here. Some of the topics I plan to cover are:
+pathfinding procedural generation simulation techniques graphics and shaders quad trees and spatial partitioning more Additionally, I&amp;rsquo;m going to start off using rust and I&amp;rsquo;d like to improve my usage of that language. I&amp;rsquo;ve explored several game engines and rendering libraries including bevy, winit and wpgu. Each has their pros and cons, but I&amp;rsquo;ve landed on the crate macroquad due to it&amp;rsquo;s extreme simplicity and easyness and getting up and running.</description>
+    </item>
+    
+    <item>
+      <title>Building rust for web with WASM</title>
+      <link>http://www.joshkomie.com/posts/building-for-web/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/building-for-web/</guid>
+      <description>One of the goals for this project is to produce runnable example in the web browser using web assembly. So let&amp;rsquo;s dive in to that.
+Building Luckily, our graphics library macroquad has comes with WASM build support. The documentation lists the following commands to build for WASM:
+rustup target add wasm32-unknown-unknown cargo build --target wasm32-unknown-unknown Running them goes smoothly and produces a .wasm file. I&amp;rsquo;ve copied that over into the project for this blog, inserted a bit of html, and:</description>
+    </item>
+    
+    <item>
+      <title>Pathfinding Demo App</title>
+      <link>http://www.joshkomie.com/posts/pathfinding-demo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/pathfinding-demo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pathfinding in Rust - Part 3 - Visualization</title>
+      <link>http://www.joshkomie.com/posts/pathfinding-visualization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.joshkomie.com/posts/pathfinding-visualization/</guid>
+      <description>In the last section, we wrote up a very basic BFS algorithm. Now, it&amp;rsquo;s time to add some visualization
+Basics I know we&amp;rsquo;ll need to break up the BFS algorithm into steps, so I do so now:
+pub fn start_bfs(&amp;amp;mut self, start: Position) { self.start = start.to_owned(); self.frontier.push_back(start.to_owned()); self.reached.insert(start.to_owned()); } pub fn step_bfs(&amp;amp;mut self) { if self.frontier.is_empty() { println!(&amp;#34;algo complete!&amp;#34;); } self.current = self.frontier.pop_front().unwrap().to_owned(); for next in self.map.neighbors(&amp;amp;self.current) { if !</description>
+    </item>
+    
+  </channel>
+</rss>

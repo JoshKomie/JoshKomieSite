@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Josh Komies Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.111.3">
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+      <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Josh Komies Blog" />
+      <link href="/index.xml" rel="feed" type="application/rss+xml" title="Josh Komies Blog" />
+      
+    
+    
+    <meta property="og:title" content="Josh Komies Blog" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://www.joshkomie.com/" />
+<meta itemprop="name" content="Josh Komies Blog">
+<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Josh Komies Blog"/>
+<meta name="twitter:description" content=""/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+
+  <header>
+    <div class="pb3-m pb6-l bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        Josh Komies Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+      <div class="tc-l pv3 ph3 ph4-ns">
+        <h1 class="f2 f-subheadline-l fw2 light-silver mb0 lh-title">
+          Josh Komies Blog
+        </h1>
+        
+      </div>
+    </div>
+  </header>
+
+
+    <main class="pb7" role="main">
+      
+ <article class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray">
+    
+  </article>
+  
+  
+  
+  
+  
+  
+  
+    
+    
+
+    <div class="pa3 pa4-ns w-100 w-70-ns center">
+      
+       
+          <h1 class="flex-none">
+            Recent Posts
+          </h1>
+        
+
+      
+
+      <section class="w-100 mw8">
+        
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/pathfinding-algorithm/" class="color-inherit dim link">
+            Pathfinding in Rust - Part 2 - BFS
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile.
+        </div>
+          <a href="/posts/pathfinding-algorithm/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/pathfinding-bfs2/" class="color-inherit dim link">
+            Pathfinding in Rust - Part 4 - BFS cont
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination.
+        </div>
+          <a href="/posts/pathfinding-bfs2/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/posts/pathfinding-setup/" class="color-inherit dim link">
+            Pathfinding in Rust - Part 1 - Setup
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&#34;pathfinder&#34;)] async fn main() { println!
+        </div>
+          <a href="/posts/pathfinding-setup/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+      </section>
+
+      
+      <section class="w-100">
+        <h1 class="f3">More</h1>
+        
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/kickoff/" class="link black dim">
+              Kickoff
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/building-for-web/" class="link black dim">
+              Building rust for web with WASM
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/pathfinding-demo/" class="link black dim">
+              Pathfinding Demo App
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="/posts/pathfinding-visualization/" class="link black dim">
+              Pathfinding in Rust - Part 3 - Visualization
+            </a>
+          </h2>
+        
+
+        
+        
+          <a href="/posts/" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">All Posts</a>
+        
+        </section>
+      
+
+      </div>
+  
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://www.joshkomie.com/" >
+    &copy;  Josh Komies Blog 2024 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

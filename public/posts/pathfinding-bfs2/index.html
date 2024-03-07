@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Pathfinding in Rust - Part 4 - BFS cont | Josh Komies Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination.">
+    <meta name="generator" content="Hugo 0.111.3">
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Pathfinding in Rust - Part 4 - BFS cont" />
+<meta property="og:description" content="In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.joshkomie.com/posts/pathfinding-bfs2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-18T18:05:19-06:00" />
+<meta property="article:modified_time" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="name" content="Pathfinding in Rust - Part 4 - BFS cont">
+<meta itemprop="description" content="In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination."><meta itemprop="datePublished" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="dateModified" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="wordCount" content="112">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pathfinding in Rust - Part 4 - BFS cont"/>
+<meta name="twitter:description" content="In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.
+To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination."/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        Josh Komies Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Pathfinding in Rust - Part 4 - BFS cont</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2024-01-18T18:05:19-06:00">January 18, 2024</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-two-thirds-l"><p>In the last section, we implemented a basic version of a breath first traversal. While that is nice and useful, let&rsquo;s use it to find a path.</p>
+<p>To start, we need to update the reached HashSet from last time, into a HashMap&lt;Position, Option<Position>&gt;. We&rsquo;ll use this hash map to track where the tile was reached from. We can use this hash map as a sort of breadcrumb system to generate a path to a destination.</p>
+<p>The code to do so looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> current <span style="color:#f92672">=</span> self.end.to_owned();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> path <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> current <span style="color:#f92672">!=</span> self.start {
+</span></span><span style="display:flex;"><span>        path.push(c.to_owned());
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> <span style="color:#f92672">&amp;</span>self.came_from[<span style="color:#f92672">&amp;</span>c] {
+</span></span><span style="display:flex;"><span>            Some(p) <span style="color:#f92672">=&gt;</span> c <span style="color:#f92672">=</span> p.to_owned(),
+</span></span><span style="display:flex;"><span>            None <span style="color:#f92672">=&gt;</span> {}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://www.joshkomie.com/" >
+    &copy;  Josh Komies Blog 2024 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

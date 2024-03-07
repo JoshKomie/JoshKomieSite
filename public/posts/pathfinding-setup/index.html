@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Pathfinding in Rust - Part 1 - Setup | Josh Komies Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&#34;pathfinder&#34;)] async fn main() { println!">
+    <meta name="generator" content="Hugo 0.111.3">
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Pathfinding in Rust - Part 1 - Setup" />
+<meta property="og:description" content="In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&#34;pathfinder&#34;)] async fn main() { println!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.joshkomie.com/posts/pathfinding-setup/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-13T18:05:19-06:00" />
+<meta property="article:modified_time" content="2024-01-13T18:05:19-06:00" />
+<meta itemprop="name" content="Pathfinding in Rust - Part 1 - Setup">
+<meta itemprop="description" content="In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&#34;pathfinder&#34;)] async fn main() { println!"><meta itemprop="datePublished" content="2024-01-13T18:05:19-06:00" />
+<meta itemprop="dateModified" content="2024-01-13T18:05:19-06:00" />
+<meta itemprop="wordCount" content="876">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pathfinding in Rust - Part 1 - Setup"/>
+<meta name="twitter:description" content="In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.
+For this series I&rsquo;ll be using Macroquad as a rendering/window engine.
+Starting a window With Macroquad, starting a window is extremely easy:
+use macroquad::{ color::BLUE, window::{clear_background, next_frame}, }; #[macroquad::main(&#34;pathfinder&#34;)] async fn main() { println!"/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        Josh Komies Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Pathfinding in Rust - Part 1 - Setup</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2024-01-13T18:05:19-06:00">January 13, 2024</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-two-thirds-l"><p>In this series my goal is to implement various pathfinding algorithms on a 2D grid, and bundle them up into a neat little program to run, test and tweak their parameters live as they run. This post will just cover the initial setup.</p>
+<p>For this series I&rsquo;ll be using Macroquad as a rendering/window engine.</p>
+<h3 id="starting-a-window">Starting a window</h3>
+<p>With Macroquad, starting a window is extremely easy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> macroquad::{
+</span></span><span style="display:flex;"><span>    color::<span style="color:#66d9ef">BLUE</span>,
+</span></span><span style="display:flex;"><span>    window::{clear_background, next_frame},
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[macroquad::main(</span><span style="color:#e6db74">&#34;pathfinder&#34;</span><span style="color:#75715e">)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    println!(<span style="color:#e6db74">&#34;Hello, world!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        clear_background(<span style="color:#66d9ef">BLUE</span>);
+</span></span><span style="display:flex;"><span>        next_frame().<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="the-building-blocks-of-pathfinding">The Building Blocks of Pathfinding</h3>
+<p>Pathfinding needs a coordinate system to use as a backbone. Pathfinding can be done with various types of grids, using meshes, or even in 3D.However, the simplest pathfinding is done with a 2D grid, so that&rsquo;s what we&rsquo;ll start with here.</p>
+<p>In a 2D grid, any entities position can be expressed by an x and a y coordinate, so I&rsquo;ll create a simple struct to hold these values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Position</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> x: <span style="color:#66d9ef">i32</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> y: <span style="color:#66d9ef">i32</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Position {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(x: <span style="color:#66d9ef">i32</span>, y: <span style="color:#66d9ef">i32</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { x, y }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Next, we&rsquo;ll need a <code>Map</code> object, to store the limits of our grid, and which grid spaces are solid or not:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Map</span> {
+</span></span><span style="display:flex;"><span>    width: <span style="color:#66d9ef">i32</span>,
+</span></span><span style="display:flex;"><span>    height: <span style="color:#66d9ef">i32</span>,
+</span></span><span style="display:flex;"><span>    tiles: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">bool</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Map {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(<span style="color:#f92672">&amp;</span>self, width: <span style="color:#66d9ef">i32</span>, height: <span style="color:#66d9ef">i32</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            width: <span style="color:#a6e22e">width</span>,
+</span></span><span style="display:flex;"><span>            height: <span style="color:#a6e22e">height</span>,
+</span></span><span style="display:flex;"><span>            tiles: Vec::new(width <span style="color:#f92672">*</span> height),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>You may notice I&rsquo;m using a 1 dimensional array to hold a 2 dimensional array. I like this strategy because it avoids having to deal with 2 dimensional arrays and all the complexities that come with them. With this approach, we can thing of flattening the grid out, and placing the tiles row by row into the 1D vec.</p>
+<p>The main trickiness comes with the &lsquo;indexing&rsquo; functions, but they aren&rsquo;t too bad.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">index</span>(<span style="color:#f92672">&amp;</span>self, x: <span style="color:#66d9ef">i32</span>, y: <span style="color:#66d9ef">i32</span>) -&gt; <span style="color:#66d9ef">usize</span> {
+</span></span><span style="display:flex;"><span>        (y <span style="color:#f92672">*</span> self.width <span style="color:#f92672">+</span> x).try_into().unwrap()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">unindex</span>(<span style="color:#f92672">&amp;</span>self, index: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#a6e22e">Position</span> {
+</span></span><span style="display:flex;"><span>        Position {
+</span></span><span style="display:flex;"><span>            x: (index_i32 <span style="color:#f92672">%</span> self.width).try_into().unwrap(),
+</span></span><span style="display:flex;"><span>            y: (index_i32 <span style="color:#f92672">/</span> self.width).try_into().unwrap(),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><h3 id="rendering">Rendering</h3>
+<p>We now have an absolute barebones map. Let&rsquo;s see if we can start rendering it. I&rsquo;m going to do my best to keep the game data and logic code totally separate from the rendering code. The rendering code should be able to take in the current game &lsquo;world&rsquo; as an argument, and render it accordingly.</p>
+<p>We&rsquo;ll start by creating a render function, moving the clear background call into it, and calling the render function from the main loop:</p>
+<p>render.rs</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">render</span>(map: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Map</span>) {
+</span></span><span style="display:flex;"><span>    clear_background(<span style="color:#66d9ef">BLUE</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>main.rs</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[macroquad::main(</span><span style="color:#e6db74">&#34;pathfinder&#34;</span><span style="color:#75715e">)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> map <span style="color:#f92672">=</span> Map::empty(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        render(<span style="color:#f92672">&amp;</span>map);
+</span></span><span style="display:flex;"><span>        next_frame().<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now we can create a function to render the map. To start with, let&rsquo;s see if we can render each empty tile as a solid white 32x32 square, and each solid tile as a black 32x32 square.</p>
+<p>For the renderer to render the map, it needs to access the internal tiles array. However, I want to keep tiles encapsulated an an internal detail of the map struct. So I&rsquo;ll add an iter() function to the map that acts as a pass-through mechanicsm to the tiles iterator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">iter</span>(<span style="color:#f92672">&amp;</span>self) -&gt; <span style="color:#a6e22e">Iter</span><span style="color:#f92672">&lt;</span>Tile<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        self.tiles.iter()
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>We can then access the map tiles in our render function like so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">render_map</span>(map: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Map</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> tile <span style="color:#66d9ef">in</span> map.iter() {
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;solid=</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, tile.solid);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>I realized I never initialized our vec of tiles, so let&rsquo;s make some changes to the Map::empty() method to do so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">empty</span>(width: <span style="color:#66d9ef">i32</span>, height: <span style="color:#66d9ef">i32</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> size: <span style="color:#66d9ef">usize</span> <span style="color:#f92672">=</span> (width <span style="color:#f92672">*</span> height).try_into().unwrap();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> map <span style="color:#f92672">=</span> Self {
+</span></span><span style="display:flex;"><span>            width: <span style="color:#a6e22e">width</span>,
+</span></span><span style="display:flex;"><span>            height: <span style="color:#a6e22e">height</span>,
+</span></span><span style="display:flex;"><span>            tiles: Vec::with_capacity(size),
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> y <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>height {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> x <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>width {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> index <span style="color:#f92672">=</span> map.index(x, y);
+</span></span><span style="display:flex;"><span>                map.tiles.insert(
+</span></span><span style="display:flex;"><span>                    index,
+</span></span><span style="display:flex;"><span>                    Tile {
+</span></span><span style="display:flex;"><span>                        solid: <span style="color:#a6e22e">false</span>,
+</span></span><span style="display:flex;"><span>                        position: <span style="color:#a6e22e">Position</span> { x: <span style="color:#a6e22e">x</span>, y: <span style="color:#a6e22e">y</span> },
+</span></span><span style="display:flex;"><span>                    },
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        map
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>And finally, let&rsquo;s add some rendering code. With Macroquad, getting some pixels up on the screen is super easy!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">render_map</span>(map: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Map</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> tile <span style="color:#66d9ef">in</span> map.iter() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> color <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> tile.solid {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">true</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">BLACK</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">false</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">WHITE</span>,
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> x <span style="color:#f92672">=</span> (tile.position.x <span style="color:#f92672">*</span> <span style="color:#66d9ef">PIXELS_PER_TILE</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> y <span style="color:#f92672">=</span> (tile.position.y <span style="color:#f92672">*</span> <span style="color:#66d9ef">PIXELS_PER_TILE</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> w <span style="color:#f92672">=</span> <span style="color:#66d9ef">PIXELS_PER_TILE</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> h <span style="color:#f92672">=</span> <span style="color:#66d9ef">PIXELS_PER_TILE</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">f32</span>;
+</span></span><span style="display:flex;"><span>        draw_rectangle(x, y, w, h, color);
+</span></span><span style="display:flex;"><span>        draw_rectangle_lines(x, y, w, h, <span style="color:#ae81ff">1.0</span>, <span style="color:#66d9ef">GRAY</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>And boom, we have a blank grid to start with!</p>
+<p><img src="/empty_grid.png" alt="empty grid of tiles"></p>
+<p>Let&rsquo;s test if our code to render solid tiles as black works as well. I used some modulus division to alternate black and white tiles.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>   <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">checkerboard</span>(width: <span style="color:#66d9ef">i32</span>, height: <span style="color:#66d9ef">i32</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> size: <span style="color:#66d9ef">usize</span> <span style="color:#f92672">=</span> (width <span style="color:#f92672">*</span> height).try_into().unwrap();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> map <span style="color:#f92672">=</span> Self {
+</span></span><span style="display:flex;"><span>            width: <span style="color:#a6e22e">width</span>,
+</span></span><span style="display:flex;"><span>            height: <span style="color:#a6e22e">height</span>,
+</span></span><span style="display:flex;"><span>            tiles: Vec::with_capacity(size),
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> y <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>height {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> x <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>width {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> solid <span style="color:#f92672">=</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> y <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>                    solid <span style="color:#f92672">=</span> <span style="color:#f92672">!</span>solid;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> index <span style="color:#f92672">=</span> map.index(x, y);
+</span></span><span style="display:flex;"><span>                map.tiles.insert(
+</span></span><span style="display:flex;"><span>                    index,
+</span></span><span style="display:flex;"><span>                    Tile {
+</span></span><span style="display:flex;"><span>                        solid: <span style="color:#a6e22e">solid</span>,
+</span></span><span style="display:flex;"><span>                        position: <span style="color:#a6e22e">Position</span> { x: <span style="color:#a6e22e">x</span>, y: <span style="color:#a6e22e">y</span> },
+</span></span><span style="display:flex;"><span>                    },
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        map
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><img src="/checkerboard.png" alt="checkerboard"></p>
+<p>Looks like it works! Next time we should have everything we need to start pathfinding!</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://www.joshkomie.com/" >
+    &copy;  Josh Komies Blog 2024 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

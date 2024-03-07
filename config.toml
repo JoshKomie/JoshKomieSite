@@ -2,3 +2,6 @@ baseURL = 'http://www.joshkomie.com/'
 languageCode = 'en-us'
 title = 'Josh Komies Blog'
 theme = 'ananke'
+
+[markup.goldmark.renderer]
+unsafe = true

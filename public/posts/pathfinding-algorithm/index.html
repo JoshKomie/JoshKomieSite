@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Pathfinding in Rust - Part 2 - BFS | Josh Komies Blog</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile.">
+    <meta name="generator" content="Hugo 0.111.3">
+    
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.css" >
+
+
+
+    
+    
+    
+      
+
+    
+
+    
+    
+    <meta property="og:title" content="Pathfinding in Rust - Part 2 - BFS" />
+<meta property="og:description" content="In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.joshkomie.com/posts/pathfinding-algorithm/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-01-18T18:05:19-06:00" />
+<meta property="article:modified_time" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="name" content="Pathfinding in Rust - Part 2 - BFS">
+<meta itemprop="description" content="In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile."><meta itemprop="datePublished" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="dateModified" content="2024-01-18T18:05:19-06:00" />
+<meta itemprop="wordCount" content="668">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pathfinding in Rust - Part 2 - BFS"/>
+<meta name="twitter:description" content="In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.
+Start and end We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:
+let start = Position { x: 0, y: 0 }; let end = Position { x: 7, y: 7 }; The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile."/>
+
+	
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="/" class="f3 fw2 hover-white no-underline white-90 dib">
+      
+        Josh Komies Blog
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+<div class="ananke-socials">
+  
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+
+
+
+
+
+
+  <div id="sharing" class="mt3 ananke-socials">
+    
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">Pathfinding in Rust - Part 2 - BFS</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2024-01-18T18:05:19-06:00">January 18, 2024</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-two-thirds-l"><p>In the last section, we created a grid-based map with tiles and code to render it. That puts us in a good position to start the pathfinding logic.</p>
+<h3 id="start-and-end">Start and end</h3>
+<p>We&rsquo;ll need a start and end point to track where we&rsquo;re pathfinding to and from. Later on, I&rsquo;d like to set this via mouse input, but for now, let&rsquo;s just make them hard coded variables:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> start <span style="color:#f92672">=</span> Position { x: <span style="color:#ae81ff">0</span>, y: <span style="color:#ae81ff">0</span> };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> end <span style="color:#f92672">=</span> Position { x: <span style="color:#ae81ff">7</span>, y: <span style="color:#ae81ff">7</span> };
+</span></span></code></pre></div><p>The basic idea of a pathfinding algorithm is to iterate through the grid by checking the neighbors of any one tile. So let&rsquo;s implement a neighbors function on our Map class. First, some convenience functions to generate vectors matching our coordinate system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">up</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { x: <span style="color:#ae81ff">0</span>, y: <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">down</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { x: <span style="color:#ae81ff">0</span>, y: <span style="color:#ae81ff">1</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">left</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { x: <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, y: <span style="color:#ae81ff">0</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">right</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { x: <span style="color:#ae81ff">1</span>, y: <span style="color:#ae81ff">0</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>And overloading the addition operator for the Position struct will be helpful as well:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> ops::Add<span style="color:#f92672">&lt;</span>Position<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> Position {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span> <span style="color:#f92672">=</span> Position;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">add</span>(self, _rhs: <span style="color:#a6e22e">Position</span>) -&gt; <span style="color:#a6e22e">Position</span> {
+</span></span><span style="display:flex;"><span>        Position {
+</span></span><span style="display:flex;"><span>            x: <span style="color:#a6e22e">self</span>.x <span style="color:#f92672">+</span> _rhs.x,
+</span></span><span style="display:flex;"><span>            y: <span style="color:#a6e22e">self</span>.y <span style="color:#f92672">+</span> _rhs.y,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now, the neighbors function becomes easy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">neighbors</span>(<span style="color:#f92672">&amp;</span>self, position: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Position</span>) -&gt; Vec<span style="color:#f92672">&lt;</span>Position<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> above <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::down();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> below <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::down();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> left <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::left();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> right <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::right();
+</span></span><span style="display:flex;"><span>        vec![above, below, left, right]
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>With the neighbors function complete, we can start the actually algorithm. Because I want to be able to split the algorithm out into steps for visualization purposes, I&rsquo;ve created a class so that state of the graph traversal can be stored.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Pathfinder</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">&#39;a</span><span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    map: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">&#39;a</span> <span style="color:#a6e22e">Map</span>,
+</span></span><span style="display:flex;"><span>    start: <span style="color:#a6e22e">Position</span>,
+</span></span><span style="display:flex;"><span>    end: <span style="color:#a6e22e">Position</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    frontier: <span style="color:#a6e22e">VecDeque</span><span style="color:#f92672">&lt;</span>Position<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    reached: <span style="color:#a6e22e">HashSet</span><span style="color:#f92672">&lt;</span>Position<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>    current: <span style="color:#a6e22e">Position</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">&#39;a</span><span style="color:#f92672">&gt;</span> Pathfinder<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">&#39;a</span><span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(map: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">&#39;a</span> <span style="color:#a6e22e">Map</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            map: <span style="color:#a6e22e">map</span>,
+</span></span><span style="display:flex;"><span>            start: <span style="color:#a6e22e">Position</span>::up(),
+</span></span><span style="display:flex;"><span>            end: <span style="color:#a6e22e">Position</span>::up(),
+</span></span><span style="display:flex;"><span>            current: <span style="color:#a6e22e">Position</span>::up(),
+</span></span><span style="display:flex;"><span>            frontier: <span style="color:#a6e22e">VecDeque</span>::new(),
+</span></span><span style="display:flex;"><span>            reached: <span style="color:#a6e22e">HashSet</span>::new(),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">bfs</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, start: <span style="color:#a6e22e">Position</span>) {
+</span></span><span style="display:flex;"><span>        self.start <span style="color:#f92672">=</span> start.to_owned();
+</span></span><span style="display:flex;"><span>        self.frontier.push_back(start.to_owned());
+</span></span><span style="display:flex;"><span>        self.reached.insert(start.to_owned());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> <span style="color:#f92672">!</span>self.frontier.is_empty() {
+</span></span><span style="display:flex;"><span>            self.current <span style="color:#f92672">=</span> self.frontier.pop_front().unwrap().to_owned();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> next <span style="color:#66d9ef">in</span> self.map.neighbors(<span style="color:#f92672">&amp;</span>self.current) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">!</span>self.reached.contains(<span style="color:#f92672">&amp;</span>next) {
+</span></span><span style="display:flex;"><span>                    self.frontier.push_back(next.to_owned());
+</span></span><span style="display:flex;"><span>                    self.reached.insert(next);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The basic bfs algorithm is fairly simple. Create a reached set to track which nodes we have visited, and a frontier to track the edge of the reached set. Then, keep iterating through the frontier, adding neighbors of the current frontier node to the frontier, and marking the current frontier as reached.</p>
+<p>However, I run it and&hellip;</p>
+<p>&hellip;we get a crash.</p>
+<p>I looked back and realized the neighbors function isn&rsquo;t checking if a neighbor is out of bounds of the map. So I went back and added some bounds checking methods to the map class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">index_safe</span>(<span style="color:#f92672">&amp;</span>self, x: <span style="color:#66d9ef">i32</span>, y: <span style="color:#66d9ef">i32</span>) -&gt; Option<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">usize</span><span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> x <span style="color:#f92672">&gt;</span> self.width <span style="color:#f92672">||</span> y <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> y <span style="color:#f92672">&gt;</span> self.height {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> None;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Some(self.index(x, y))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">index_safe_pos</span>(<span style="color:#f92672">&amp;</span>self, pos: <span style="color:#a6e22e">Position</span>) -&gt; Option<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">usize</span><span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        self.index_safe(pos.x, pos.y)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">in_map</span>(<span style="color:#f92672">&amp;</span>self, pos: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Position</span>) -&gt; <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>        self.index_safe_pos(pos.to_owned()).is_some()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">unindex</span>(<span style="color:#f92672">&amp;</span>self, index: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#a6e22e">Position</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> index_i32: <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> index.try_into().unwrap();
+</span></span><span style="display:flex;"><span>        Position {
+</span></span><span style="display:flex;"><span>            x: (index_i32 <span style="color:#f92672">%</span> self.width).try_into().unwrap(),
+</span></span><span style="display:flex;"><span>            y: (index_i32 <span style="color:#f92672">/</span> self.width).try_into().unwrap(),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>Perhaps not the cleanest, but I like small functions that don&rsquo;t get to complicated.</p>
+<p>The neighbors function then becomes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">neighbors</span>(<span style="color:#f92672">&amp;</span>self, position: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">Position</span>) -&gt; Vec<span style="color:#f92672">&lt;</span>Position<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> n <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> above <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::up();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.in_map(<span style="color:#f92672">&amp;</span>above) {
+</span></span><span style="display:flex;"><span>            n.push(above);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> below <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::down();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.in_map(<span style="color:#f92672">&amp;</span>below) {
+</span></span><span style="display:flex;"><span>            n.push(below);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> left <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::down();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.in_map(<span style="color:#f92672">&amp;</span>left) {
+</span></span><span style="display:flex;"><span>            n.push(left);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> right <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> Position::down();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.in_map(<span style="color:#f92672">&amp;</span>right) {
+</span></span><span style="display:flex;"><span>            n.push(right);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        n
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>And with that, the bfs appears to be working. In the next stage, we&rsquo;ll add some visualization!</p>
+<p><img src="/checkerboard.png" alt="checkerboard"></p>
+<p>Looks like it works! Next time we should have everything we need to start pathfinding!</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://www.joshkomie.com/" >
+    &copy;  Josh Komies Blog 2024 
+  </a>
+    <div>
+<div class="ananke-socials">
+  
+</div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
